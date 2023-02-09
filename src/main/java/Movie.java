@@ -1,18 +1,19 @@
-public class Movie {
+public abstract class Movie {
 
     private String _title;
-    private MovieType _movieType;
 
-    public Movie (String title, MovieType movieType) {
+    public Movie (String title) {
         this._title = title;
-        this._movieType = movieType;
-    }
-
-    public MovieType getMovieType() {
-        return _movieType;
     }
 
     public String getTitle() {
         return _title;
     }
+
+    /**
+     * Return the movie statement according to the number of days rented
+     * @param daysRented the number of days the movie has been rented
+     * @return
+     */
+    public abstract double statement (int daysRented);
 }

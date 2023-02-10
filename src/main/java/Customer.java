@@ -19,34 +19,22 @@ public class Customer {
         return _name;
     }
 
+    /**
+     * Return customer's statement
+     * @return
+     */
     public String statement() {
         double totalAmount = 0;
         int frequentRenterPoints = 0;
         String result = "Rental Record for " + getName() + "\n";
         for (Rental rental : _rentals) {
-            double thisAmount = 0;
 
-            //determine amount for each line
-            switch (rental.getMovie().getMovieType()) {
-                case REGULAR:
-                    thisAmount += 2;
-                    if (rental.getDaysRented() > 2)
-                        thisAmount += (rental.getDaysRented() - 2) * 1.5;
-                    break;
-                case NEW_RELEASE:
-                    thisAmount += rental.getDaysRented() * 3;
-                    break;
-                case CHILDREN:
-                    thisAmount += 1.5;
-                    if (rental.getDaysRented() > 3)
-                        thisAmount += (rental.getDaysRented() - 3) * 1.5;
-                    break;
-            }
+            double thisAmount = rental.getMovie().statement(rental.getDaysRented());
 
             // add frequent renter points
             frequentRenterPoints ++;
             // add bonus for a two day new release rental
-            if ((rental.getMovie().getMovieType() == MovieType.NEW_RELEASE) && rental.getDaysRented() > 1)
+            if ((rental.getMovie() instanceof NewReleaseMovie) && rental.getDaysRented() > 1)
                 frequentRenterPoints ++;
 
             // show figures for this rental
@@ -55,15 +43,43 @@ public class Customer {
 
         }
         // add footer lines
-        result += "Amount owed is " + totalAmount + "\n";
+        result += "Amount owned is " + totalAmount + "\n";
         result += "You earned " + frequentRenterPoints + " frequent renter points";
         return result;
 
     }
 
+    /**
+     * Return a string of customer's statement in html format
+     * @return
+     */
     public String htmlStatement(){
-        String recup = statement();
-        
-        return recup ;
+
+        String sentences [] = statement().split("\n");
+        String htmlString = "";
+        for (int i=0; i<sentences.length; i++)
+        {
+            if (i==0)
+            {
+                htmlString += "<h1>" + sentences[i] + "<h1>\n<p>\n\t<ul>\n";
+            }
+            else if (i==sentences.length - 2)
+            {
+                if (sentences.length <= 3)
+                {
+                    htmlString += "\t\tNo rental record for " + this._name + "\n";
+                }
+                htmlString += "\t</ul>\n</p>\n<p>\n\t<em>\n\t\t" + sentences[i] + "<br>\n";
+            }
+            else if (i==sentences.length - 1)
+            {
+                htmlString += "\t\t" + sentences[i] + "<br>\n\t</em>\n</p>";
+            }
+            else
+            {
+                htmlString += "\t\t<li>" + sentences[i] + "</li>\n";
+            }
+        }
+        return htmlString;
     }
 }
